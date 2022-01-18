@@ -9,8 +9,10 @@
 CONTEXT='/home/ec2-user/ben-tech-challenge/app'
 DOCKERFILE='../app/Dockerfile'
 APPNAME='ben-tech-challenge'
-VERSION_TAG='v1'
-IMAGE="$APPNAME_$VERSION_TAG"
+VERSION=$(git describe)
+SHA=$(git rev-parse --short HEAD)
+VERSION_TAG="$VERSION.$SHA"
+IMAGE="$APPNAME-$VERSION_TAG"
 
 # Clean up container if it is already running
 docker stop $APPNAME 2>/dev/null 
