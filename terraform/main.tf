@@ -6,6 +6,8 @@ terraform {
   }
 }
 
+# API GATEWAY RESOURCES
+#
 resource "aws_api_gateway_rest_api" "api" {
   name = "health"
 }
@@ -57,4 +59,15 @@ resource "aws_api_gateway_stage" "api" {
   deployment_id = aws_api_gateway_deployment.api.id
   rest_api_id   = aws_api_gateway_rest_api.api.id
   stage_name    = "dev"
+}
+
+# ECR RESOURCES
+#
+resource "aws_ecr_repository" "ecr" {
+  name                 = "${var.appname}-${var.environment}-repo"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = false # Would set to true for release candidate
+  }
 }
