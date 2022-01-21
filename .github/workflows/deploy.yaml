@@ -3,6 +3,7 @@ on:
     branches:
       - main
       - feature-ecr-ecs
+    
 
 name: Deploy to AWS
   
@@ -22,10 +23,13 @@ jobs:
         role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
         role-external-id: ${{ secrets.AWS_ROLE_EXTERNAL_ID }}
     
+    - name: Checkout
+        uses: actions/checkout@v2
+    
     - name: deploy terraform
     #   env:
     #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
     #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     #     AWS_DEFAULT_REGION: ap-southeast-2
       run: make
-      working-directory: terraform
+      working-directory: ./terraform
