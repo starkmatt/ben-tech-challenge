@@ -24,7 +24,7 @@ jobs:
         role-external-id: ${{ secrets.AWS_ROLE_EXTERNAL_ID }}
     
     - name: Checkout
-        uses: actions/checkout@v2
+      uses: actions/checkout@v2
     
     - name: deploy terraform
     #   env:
