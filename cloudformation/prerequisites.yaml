@@ -1,0 +1,39 @@
+######
+#
+# Description:
+#   Deploys prerequisites for deploy pipeline
+#   Includes:
+#     s3 bucket to host terraform state files
+#     Create IAM permissions for deploy execution (TBD)
+#
+######
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'prerequisites for deploy pipeline'
+
+Parameters:
+  pAppName:
+    Type: String
+    Default: 'ben-tech-challenge'
+  
+  pS3Name:
+    Description: 'Unique name for s3 resources'
+    Type: String
+    Default: 'snitch-tf-state-bucket'
+
+Resources:
+  s3TerraformStateBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties: 
+      AccessControl: Private
+      BucketName: !Ref pS3Name
+      VersioningConfiguration:
+        Status: "Enabled"
+  
+  s3BucketNameSSMParameter:
+    Type: AWS::SSM::Parameter
+    Properties: 
+      Description: 'Terraform State S3 bucket'
+      Name: !Sub '/${pAppName}/TFStateBucket'
+      Type: String
+      Value: !Ref s3TerraformStateBucket
