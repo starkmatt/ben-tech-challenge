@@ -43,7 +43,7 @@ jobs:
         #ECR_REPO: "${{ aws ssm get-parameter --name /ben-tech-challenge/local/ecr-url --output text --query Parameter.Value }}"
         ECR_REPO: '${{ steps.login-ecr.outputs.registry }}/ben-tech-challenge-local-repo'
         #HASH: ${{ git rev-parse --long HEAD }}
-        VERSION_TAG: ${{ git describe --tags }}
+        VERSION_TAG: v1.1-16-g8f28fd3 #${{ git describe --tags }}
       working-directory: ./app
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPO:$VERSION_TAG .
