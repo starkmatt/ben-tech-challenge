@@ -3,8 +3,8 @@ on:
     branches:
       - main
       - feature-ecr-ecs
-    paths:
-      - "../../terraform"
+    # paths:
+    #   - "./terraform"
     
 
 name: Deploy to AWS
@@ -28,10 +28,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     
-    - name: deploy terraform
-    #   env:
-    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     AWS_DEFAULT_REGION: ap-southeast-2
+    - name: Deploy Terraform
       run: make
       working-directory: ./terraform
+    
+    - name: Login to ECR
+      id: ecr
+      uses: jwalton/gh-ecr-login@v1
