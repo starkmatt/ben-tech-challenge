@@ -4,10 +4,10 @@ on:
       - main
       - feature-ecr-ecs
     
-env:
-  ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  REGION: 'ap-southeast-2'
+# env:
+#   ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#   SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#   REGION: 'ap-southeast-2'
 
 name: Deploy to AWS
   
@@ -18,12 +18,19 @@ jobs:
     
     steps:
     
+    # - name: Configure AWS Credentials
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: $ACCESS_KEY_ID
+    #     aws-secret-access-key: $SECRET_ACCESS_KEY
+    #     aws-region: $REGION
+    
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: $ACCESS_KEY_ID
-        aws-secret-access-key: $SECRET_ACCESS_KEY
-        aws-region: $REGION
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-southeast-2
     
     - name: Checkout
       uses: actions/checkout@v2
