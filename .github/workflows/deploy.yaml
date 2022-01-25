@@ -3,9 +3,11 @@ on:
     branches:
       - main
       - feature-ecr-ecs
-    # paths:
-    #   - "./terraform"
     
+env:
+  ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  REGION: ap-southeast-2
 
 name: Deploy to AWS
   
@@ -19,11 +21,9 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-southeast-2
-        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-        role-external-id: ${{ secrets.AWS_ROLE_EXTERNAL_ID }}
+        aws-access-key-id: $ACCESS_KEY_ID
+        aws-secret-access-key: $SECRET_ACCESS_KEY
+        aws-region: $REGION
     
     - name: Checkout
       uses: actions/checkout@v2
@@ -32,6 +32,6 @@ jobs:
       run: make
       working-directory: ./terraform
     
-    - name: Login to ECR
-      id: ecr
-      uses: jwalton/gh-ecr-login@v1
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
