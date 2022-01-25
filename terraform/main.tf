@@ -71,3 +71,9 @@ resource "aws_ecr_repository" "ecr" {
     scan_on_push = false # Would set to true for release candidate
   }
 }
+
+resource "aws_ssm_parameter" "ecr" {
+  name  = "/${var.appname}/${var.environment}/ecr-url"
+  type  = "String"
+  value = "${aws_ecr_repository.ecr.repository_url}"
+}

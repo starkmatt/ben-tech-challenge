@@ -3,6 +3,8 @@ on:
     branches:
       - main
       - feature-ecr-ecs
+    paths:
+      - "../../terraform"
     
 
 name: Deploy to AWS

@@ -1,4 +1,4 @@
-#Terraform
+## Terraform
 # Local .terraform directories
 **/.terraform/*
 
@@ -9,6 +9,9 @@
 # plan and lock files
 .terraform-plan
 *.lock.hcl
+
+## Scripts & Util
+**/ecr-push.sh
 
 ## Node defaults
 # Logs
