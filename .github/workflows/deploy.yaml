@@ -38,14 +38,14 @@ jobs:
     
     - name: Build and push image to ECR Repo
       id: build-image
-      env:
-        #ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        #ECR_REPO: "${{ aws ssm get-parameter --name /ben-tech-challenge/local/ecr-url --output text --query Parameter.Value }}"
-        ECR_REPO: '${{ steps.login-ecr.outputs.registry }}/ben-tech-challenge-local-repo'
-        #HASH: ${{ git rev-parse --long HEAD }}
-        VERSION_TAG: v1.1-16-g8f28fd3 #${{ git describe --tags }}
+      # env:
+      #   #ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #   #ECR_REPO: "${{ aws ssm get-parameter --name /ben-tech-challenge/local/ecr-url --output text --query Parameter.Value }}"
+      #   ECR_REPO: '${{ steps.login-ecr.outputs.registry }}/ben-tech-challenge-local-repo'
+      #   #HASH: ${{ git rev-parse --long HEAD }}
+      #   VERSION_TAG: v1.1-16-g8f28fd3 #${{ git describe --tags }}
       working-directory: ./app
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPO:$VERSION_TAG .
-        docker push $ECR_REPO:$VERSION_TAG
-        echo "::set-output name=image::$ECR_REPO:$VERSION_TAG"
+        docker build -t ben-tech-challenge-local-repo .
+        docker tag ben-tech-challenge-local-repo:latest 806134853709.dkr.ecr.ap-southeast-2.amazonaws.com/ben-tech-challenge-local-repo:latest
+        docker push 806134853709.dkr.ecr.ap-southeast-2.amazonaws.com/ben-tech-challenge-local-repo:latest
