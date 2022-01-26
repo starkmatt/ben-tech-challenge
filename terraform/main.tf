@@ -64,7 +64,7 @@ resource "aws_api_gateway_stage" "api" {
 # ECR RESOURCES
 #
 resource "aws_ecr_repository" "ecr" {
-  name                 = "${var.appname}-${var.environment}-repo"
+  name = "${var.appname}-${var.environment}-repo"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -72,8 +72,69 @@ resource "aws_ecr_repository" "ecr" {
   }
 }
 
+# Might not be necessary since github actions can return the ecr registry url
 resource "aws_ssm_parameter" "ecr" {
   name  = "/${var.appname}/${var.environment}/ecr-url"
   type  = "String"
   value = "${aws_ecr_repository.ecr.repository_url}"
+}
+
+# ECS RESOURCES
+#
+resource "aws_ecs_cluster" "ecs" {
+  name = "${var.appname}-${var.environment}-ecs-cluster"
+}
+
+resource "aws_ecs_task_definition" "ecs" {
+  family = "health-api"
+  container_definitions = jsonencode([
+    {
+      name      = "${var.appname}-${var.environment}-ecs-health-api"
+      image     = aws_ecr_repository.ecr.repository_url
+      cpu       = 256
+      memory    = 512
+      essential = true
+      portMappings = [
+        {
+          containerPort = 80
+          hostPort      = 80
+        }
+      ]
+    }
+  ])
+  requires_compatibilities = ["FARGATE"]
+  network_mode = "awsvpc"
+  cpu = 256
+  memory = 512
+  execution_role_arn = aws_iam_role.ecs.arn
+}
+
+resource aws_iam_role ecs {
+  name = "ecsTaskExecutionRole"
+  assume_role_policy = data.aws_iam_policy_document.ecs.json
+  # assume_role_policy = <<EOF
+  # {
+  #   "Version": "2012-10-17",
+  #   "Statement": [
+  # {
+  #     "Action": "sts:AssumeRole",
+  #     "Principal": {
+  #       "Service": "ecs-tasks.amazonaws.com"
+  #     },
+  #     "Effect": "Allow",
+  #     "Sid": "*"
+  # }
+  # ]
+  # }
+  # EOF
+}
+
+data "aws_iam_policy_document" ecs {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
 }
