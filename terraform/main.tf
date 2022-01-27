@@ -16,17 +16,17 @@ resource "aws_internet_gateway" "network" {
   vpc_id = aws_vpc.network.id
 }
 
-resource "aws_subnet" "private1" {
-  vpc_id = aws_vpc.network.id
-  cidr_block = var.private1Cidr
-  availability_zone = var.availabilityZoneA
-}
+# resource "aws_subnet" "private1" {
+#   vpc_id = aws_vpc.network.id
+#   cidr_block = var.private1Cidr
+#   availability_zone = var.availabilityZoneA
+# }
 
-resource "aws_subnet" "private2" {
-  vpc_id = aws_vpc.network.id
-  cidr_block = var.private2Cidr
-  availability_zone = var.availabilityZoneB
-}
+# resource "aws_subnet" "private2" {
+#   vpc_id = aws_vpc.network.id
+#   cidr_block = var.private2Cidr
+#   availability_zone = var.availabilityZoneB
+# }
 
 resource "aws_subnet" "public1" {
   vpc_id = aws_vpc.network.id
@@ -62,36 +62,36 @@ resource "aws_route_table_association" "public2" {
   route_table_id = aws_route_table.public.id
 }
 
-# Actually not certain that my container needs to access the internet so the nat gateway may be unnecessary
-resource "aws_nat_gateway" "natgw" {
-  allocation_id = aws_eip.natgw.id
-  subnet_id     = aws_subnet.public1.id
-  depends_on = [aws_internet_gateway.network]
-}
+# # Actually not certain that my container needs to access the internet so the nat gateway may be unnecessary
+# resource "aws_nat_gateway" "natgw" {
+#   allocation_id = aws_eip.natgw.id
+#   subnet_id     = aws_subnet.public1.id
+#   depends_on = [aws_internet_gateway.network]
+# }
 
-resource "aws_eip" "natgw" {
-  vpc = true
-}
+# resource "aws_eip" "natgw" {
+#   vpc = true
+# }
 
-resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.network.id
-}
+# resource "aws_route_table" "private" {
+#   vpc_id = aws_vpc.network.id
+# }
 
-resource "aws_route" "private" {
-  route_table_id = aws_route_table.private.id
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id = aws_nat_gateway.natgw.id
-}
+# resource "aws_route" "private" {
+#   route_table_id = aws_route_table.private.id
+#   destination_cidr_block = "0.0.0.0/0"
+#   nat_gateway_id = aws_nat_gateway.natgw.id
+# }
 
-resource "aws_route_table_association" "private1" {
-  subnet_id = aws_subnet.private1.id
-  route_table_id = aws_route_table.private.id
-}
+# resource "aws_route_table_association" "private1" {
+#   subnet_id = aws_subnet.private1.id
+#   route_table_id = aws_route_table.private.id
+# }
 
-resource "aws_route_table_association" "private2" {
-  subnet_id = aws_subnet.private2.id
-  route_table_id = aws_route_table.private.id
-}
+# resource "aws_route_table_association" "private2" {
+#   subnet_id = aws_subnet.private2.id
+#   route_table_id = aws_route_table.private.id
+# }
 
 
 # SECURITY GROUPS
@@ -138,21 +138,21 @@ resource"aws_security_group" "ecs" {
 
 # ECR RESOURCES
 #
-resource "aws_ecr_repository" "ecr" {
-  name = "${var.appname}-${var.environment}-repo"
-  image_tag_mutability = "MUTABLE"
+# resource "aws_ecr_repository" "ecr" {
+#   name = "${var.appname}-${var.environment}-repo"
+#   image_tag_mutability = "MUTABLE"
 
-  image_scanning_configuration {
-    scan_on_push = false # Would set to true for release candidate
-  }
-}
+#   image_scanning_configuration {
+#     scan_on_push = false # Would set to true for release candidate
+#   }
+# }
 
 # Might not be necessary since github actions can return the ecr registry url
-resource "aws_ssm_parameter" "ecr" {
-  name  = "/${var.appname}/${var.environment}/ecr-url"
-  type  = "String"
-  value = "${aws_ecr_repository.ecr.repository_url}"
-}
+# resource "aws_ssm_parameter" "ecr" {
+#   name  = "/${var.appname}/${var.environment}/ecr-url"
+#   type  = "String"
+#   value = "${aws_ecr_repository.ecr.repository_url}"
+# }
 
 # ECS RESOURCES
 #
@@ -160,23 +160,21 @@ resource "aws_ecs_cluster" "ecs" {
   name = "${var.appname}-${var.environment}-ecs-cluster"
 }
 
+
+data "template_file" "main" {
+  template = "${file("${path.module}/task_definition.json")}"
+
+  vars = {
+    image = var.dockerRepo
+    appname = var.appname
+    environment = var.environment
+  }
+}
+
+
 resource "aws_ecs_task_definition" "ecs" {
   family = "health-api"
-  container_definitions = jsonencode([
-    {
-      name      = "${var.appname}-${var.environment}-ecs-health-api"
-      image     = aws_ecr_repository.ecr.repository_url
-      cpu       = 256
-      memory    = 512
-      essential = true
-      portMappings = [
-        {
-          containerPort = var.containerPort
-          hostPort      = var.containerPort
-        }
-      ]
-    }
-  ])
+  container_definitions = data.template_file.main.rendered
   requires_compatibilities = ["FARGATE"]
   network_mode = "awsvpc"
   cpu = 256
@@ -207,7 +205,7 @@ resource "aws_ecs_service" "ecs"{
   
   network_configuration {
     security_groups  = [aws_security_group.ecs.id]
-    subnets          = [aws_subnet.private1.id,aws_subnet.private2.id]
+    subnets          = [aws_subnet.public1.id,aws_subnet.public2.id]
     assign_public_ip = false
   }
   

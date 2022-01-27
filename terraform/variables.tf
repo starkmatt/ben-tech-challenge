@@ -10,3 +10,4 @@ variable "public2Cidr" {}
 variable containerPort {}
 variable "availabilityZoneA" {}
 variable "availabilityZoneB" {}
+variable "dockerRepo" {}

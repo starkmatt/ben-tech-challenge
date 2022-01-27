@@ -1,0 +1,15 @@
+[
+  {
+    "memory": 512,
+    "portMappings": [
+      {
+        "hostPort": 80,
+        "containerPort": 8080,
+        "protocol": "tcp"
+      }
+    ],
+    "essential": true,
+    "name": "${appname}-${environment}-ecs-health-api",
+    "image": "${image}:"
+  }
+]

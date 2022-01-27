@@ -10,3 +10,4 @@ public2Cidr = "10.0.0.192/26"
 containerPort = 8080
 availabilityZoneA = "ap-southeast-2a"
 availabilityZoneB = "ap-southeast-2b"
+dockerRepo = "nichichi/btc-repo"
