@@ -211,7 +211,7 @@ resource "aws_ecs_service" "ecs"{
   
   load_balancer {
     target_group_arn = aws_alb_target_group.alb.arn
-    container_name = "${var.appname}-${var.environment}-container"
+    container_name = "${var.appname}-${var.environment}-ecs-health-api"
     container_port = var.containerPort
   }
   
