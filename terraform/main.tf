@@ -202,6 +202,7 @@ resource "aws_ecs_service" "ecs"{
   cluster = aws_ecs_cluster.ecs.id
   task_definition = aws_ecs_task_definition.ecs.arn
   desired_count = 1
+  launch_type = "FARGATE"
   
   network_configuration {
     security_groups  = [aws_security_group.ecs.id]
