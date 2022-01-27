@@ -36,10 +36,7 @@ jobs:
       working-directory: ./app
       run: |
         docker login --username $DOCKER_USER --password $DOCKER_PASSWORD
-        export SHA=$(git describe --tags --long)
-        docker build -t nichichi/btc-repo:$SHA .
-        docker push nichichi/btc-repo:$SHA
-        
+        bash -x ../scripts/build.sh
     
     # - name: Deploy Terraform
     #   run: make
