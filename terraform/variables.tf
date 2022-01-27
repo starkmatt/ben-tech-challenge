@@ -2,3 +2,11 @@ variable "appname" {}
 variable "environment" {}
 variable "region" {}
 variable "profile" {}
+variable "cidr" {}
+variable "private1Cidr" {}
+variable "private2Cidr" {}
+variable "public1Cidr" {}
+variable "public2Cidr" {}
+variable containerPort {}
+variable "availabilityZoneA" {}
+variable "availabilityZoneB" {}
