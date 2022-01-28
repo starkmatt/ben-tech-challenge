@@ -109,10 +109,11 @@ resource "aws_security_group" "alb" {
   }
   
   egress {
-    from_port =0
-    to_port = 0
+    from_port = var.containerPort
+    to_port =  var.containerPort
     protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    #cidr_blocks = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.ecs.id]
   }
 }
 
@@ -125,7 +126,8 @@ resource"aws_security_group" "ecs" {
     protocol = "tcp"
     from_port = var.containerPort
     to_port = var.containerPort
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.alb.id]
+    #cidr_blocks = ["0.0.0.0/0"]
   }
   
   egress {
@@ -135,24 +137,6 @@ resource"aws_security_group" "ecs" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
-# ECR RESOURCES
-#
-# resource "aws_ecr_repository" "ecr" {
-#   name = "${var.appname}-${var.environment}-repo"
-#   image_tag_mutability = "MUTABLE"
-
-#   image_scanning_configuration {
-#     scan_on_push = false # Would set to true for release candidate
-#   }
-# }
-
-# Might not be necessary since github actions can return the ecr registry url
-# resource "aws_ssm_parameter" "ecr" {
-#   name  = "/${var.appname}/${var.environment}/ecr-url"
-#   type  = "String"
-#   value = "${aws_ecr_repository.ecr.repository_url}"
-# }
 
 # ECS RESOURCES
 #
@@ -210,7 +194,7 @@ resource "aws_ecs_service" "ecs"{
   network_configuration {
     security_groups  = [aws_security_group.ecs.id]
     subnets          = [aws_subnet.public1.id,aws_subnet.public2.id]
-    assign_public_ip = true
+    assign_public_ip = var.publicIp
   }
   
   load_balancer {

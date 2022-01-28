@@ -13,3 +13,4 @@ variable "availabilityZoneB" {}
 variable "dockerRepo" {}
 variable cpu {}
 variable memory {}
+variable publicIp {}
