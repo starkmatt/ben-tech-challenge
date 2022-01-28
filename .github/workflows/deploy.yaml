@@ -40,10 +40,10 @@ jobs:
       working-directory: ./app
       run: |
         docker login --username $DOCKER_USER --password $DOCKER_PASSWORD
-        docker build -t $DOCKER_REPO:${GITHUB_SHA::7} . --build-arg SHA=$GIHTUB_SHA --build-arg APPNAME=$APPNAME --build-arg VERSION=${{ steps.vars.outputs.VERSION_TAG }}
+        docker build -t $DOCKER_REPO:${GITHUB_SHA::7} . --build-arg SHA=${GITHUB_SHA::7} --build-arg APPNAME=$APPNAME --build-arg VERSION=${{ steps.vars.outputs.VERSION_TAG }}
         docker push $DOCKER_REPO:${GITHUB_SHA::7}
         sed 's|{image}:|{image}:'"${GITHUB_SHA::7}"'|g' ../terraform/td-template.json > ../terraform/task_definition.json
         
-    # - name: Deploy Terraform
-    #   run: make
-    #   working-directory: ./terraform
+    - name: Deploy Terraform
+      run: make
+      working-directory: ./terraform
