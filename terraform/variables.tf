@@ -8,6 +8,7 @@ variable "private2Cidr" {}
 variable "public1Cidr" {}
 variable "public2Cidr" {}
 variable containerPort {}
+variable albPort {}
 variable "availabilityZoneA" {}
 variable "availabilityZoneB" {}
 variable "dockerRepo" {}

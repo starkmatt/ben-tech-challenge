@@ -100,42 +100,48 @@ resource "aws_security_group" "alb" {
   name = "${var.appname}-${var.environment}-sg-alb"
   description = "Allow HTTP inbound traffic"
   vpc_id = aws_vpc.network.id
-  
-  ingress {
-    protocol = "tcp"
-    from_port = 80
-    to_port = 80
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  
-  egress {
-    from_port = var.containerPort
-    to_port =  var.containerPort
-    protocol = "-1"
-    #cidr_blocks = ["0.0.0.0/0"]
-    security_groups = [aws_security_group.ecs.id]
-  }
 }
 
-resource"aws_security_group" "ecs" {
+resource "aws_security_group_rule" "alb-ingress" {
+  type = "ingress"
+  protocol = "tcp"
+  from_port = var.albPort
+  to_port = var.albPort
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.alb.id
+}
+
+resource "aws_security_group_rule" "alb-egress" {
+  type = "egress"
+  protocol = "tcp"
+  from_port = var.containerPort
+  to_port = var.containerPort
+  security_group_id = aws_security_group.alb.id
+  source_security_group_id = aws_security_group.ecs.id
+}
+
+resource "aws_security_group" "ecs" {
   name = "${var.appname}-${var.environment}-sg-ecs"
   description = "Allow HTTP inbound traffic"
   vpc_id = aws_vpc.network.id
-  
-  ingress {
-    protocol = "tcp"
-    from_port = var.containerPort
-    to_port = var.containerPort
-    security_groups = [aws_security_group.alb.id]
-    #cidr_blocks = ["0.0.0.0/0"]
-  }
-  
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+}
+
+resource "aws_security_group_rule" "ecs-ingress" {
+  type = "ingress"
+  protocol = "tcp"
+  from_port = var.containerPort
+  to_port = var.containerPort
+  security_group_id = aws_security_group.ecs.id
+  source_security_group_id = aws_security_group.alb.id
+}
+
+resource "aws_security_group_rule" "ecs-egress" {
+  type = "egress"
+  from_port = 0
+  to_port = 0
+  protocol = "-1"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.ecs.id
 }
 
 # ECS RESOURCES
@@ -234,7 +240,7 @@ resource "aws_alb_target_group" "alb" {
 
 resource "aws_alb_listener" "http" {
   load_balancer_arn = aws_lb.alb.arn
-  port              = "80"
+  port              = var.albPort
   protocol          = "HTTP"
   
   default_action {
