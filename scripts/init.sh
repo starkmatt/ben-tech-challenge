@@ -6,7 +6,7 @@
 #   ./init.sh
 #
 ######
-CONTEXT='/home/ec2-user/ben-tech-challenge/app'
+CONTEXT='/home/ec2-user/environment/ben-tech-challenge/app'
 DOCKERFILE='../app/Dockerfile'
 APPNAME='ben-tech-challenge'
 VERSION=$(git describe)
@@ -19,4 +19,4 @@ docker stop $APPNAME 2>/dev/null
 docker rm $APPNAME 2>/dev/null 
 
 docker build --file $DOCKERFILE $CONTEXT --tag $IMAGE
-docker run --detach --publish 8080:8080 --name $APPNAME --tty $IMAGE 
+docker run --detach --publish 80:80 --name $APPNAME --tty $IMAGE 
