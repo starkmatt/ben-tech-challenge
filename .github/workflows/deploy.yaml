@@ -4,10 +4,9 @@ on:
       - main
       - feature-ecr-ecs
     
-# env:
-#   ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#   SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#   REGION: 'ap-southeast-2'
+env:
+  APPNAME: "ben-tech-challenge"
+  DOCKER_REPO: "nichichi/btc-repo"
 
 name: Deploy to AWS
   
@@ -27,6 +26,8 @@ jobs:
     
     - name: Checkout
       uses: actions/checkout@v2
+      with:
+        fetch-depth: '0' # to get history for all branches and tags
     
     - name: Set vars
       id: vars
@@ -36,14 +37,13 @@ jobs:
       env:
         DOCKER_USER:  ${{ secrets.DOCKER_USER }}
         DOCKER_PASSWORD:  ${{ secrets.DOCKER_PASSWORD }}
-        DOCKER_REPO: "nichichi/btc-repo"
       working-directory: ./app
       run: |
         docker login --username $DOCKER_USER --password $DOCKER_PASSWORD
-        docker build -t $DOCKER_REPO:${GITHUB_SHA::7} .
+        docker build -t $DOCKER_REPO:${GITHUB_SHA::7} . --build-arg SHA=$GIHTUB_SHA --build-arg APPNAME=$APPNAME --build-arg VERSION=${{ steps.vars.outputs.VERSION_TAG }}
         docker push $DOCKER_REPO:${GITHUB_SHA::7}
         sed 's|{image}:|{image}:'"${GITHUB_SHA::7}"'|g' ../terraform/td-template.json > ../terraform/task_definition.json
         
-    - name: Deploy Terraform
-      run: make
-      working-directory: ./terraform
+    # - name: Deploy Terraform
+    #   run: make
+    #   working-directory: ./terraform

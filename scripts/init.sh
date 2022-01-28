@@ -18,5 +18,5 @@ IMAGE="$APPNAME-$VERSION_TAG"
 docker stop $APPNAME 2>/dev/null 
 docker rm $APPNAME 2>/dev/null 
 
-docker build --file $DOCKERFILE $CONTEXT --tag $IMAGE
+docker build --file $DOCKERFILE $CONTEXT --tag $IMAGE --build-arg APPNAME=$APPNAME --build-arg SHA=$SHA --build-arg VERSION=$VERSION
 docker run --detach --publish 80:80 --name $APPNAME --tty $IMAGE 

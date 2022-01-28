@@ -1,4 +1,10 @@
 FROM node:16
+ARG SHA
+ARG APPNAME
+ARG VERSION
+ENV SHA=$SHA
+ENV APPNAME=$APPNAME
+ENV VERSION=$VERSION
 WORKDIR /usr/src/app
 COPY app.js package*.json ./
 RUN npm install
