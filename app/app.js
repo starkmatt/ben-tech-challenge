@@ -1,5 +1,5 @@
 const app = require('express')();
-const port = 80;
+const port = process.env.PORT;
 
 app.get('/health', (req, res) => {
     res.status(200).send({

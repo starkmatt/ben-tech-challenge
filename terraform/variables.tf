@@ -11,3 +11,5 @@ variable containerPort {}
 variable "availabilityZoneA" {}
 variable "availabilityZoneB" {}
 variable "dockerRepo" {}
+variable cpu {}
+variable memory {}

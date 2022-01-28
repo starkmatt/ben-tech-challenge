@@ -11,3 +11,5 @@ containerPort = 80
 availabilityZoneA = "ap-southeast-2a"
 availabilityZoneB = "ap-southeast-2b"
 dockerRepo = "nichichi/btc-repo"
+cpu = 256
+memory = 512

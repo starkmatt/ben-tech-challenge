@@ -2,11 +2,13 @@ FROM node:16
 ARG SHA
 ARG APPNAME
 ARG VERSION
+ARG PORT
 ENV SHA=$SHA
 ENV APPNAME=$APPNAME
 ENV VERSION=$VERSION
+ENV PORT=$PORT
 WORKDIR /usr/src/app
 COPY app.js package*.json ./
 RUN npm install
-EXPOSE 80
+EXPOSE $PORT
 CMD ["node", "app.js"]

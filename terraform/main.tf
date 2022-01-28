@@ -168,6 +168,9 @@ data "template_file" "main" {
     image = var.dockerRepo
     appname = var.appname
     environment = var.environment
+    cpu = var.cpu
+    memory = var.memory
+    port = var.containerPort
   }
 }
 
@@ -177,8 +180,8 @@ resource "aws_ecs_task_definition" "ecs" {
   container_definitions = data.template_file.main.rendered
   requires_compatibilities = ["FARGATE"]
   network_mode = "awsvpc"
-  cpu = 256
-  memory = 512
+  cpu = var.cpu
+  memory = var.memory
   execution_role_arn = aws_iam_role.ecs.arn
 }
 
