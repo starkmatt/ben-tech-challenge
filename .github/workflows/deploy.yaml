@@ -3,6 +3,10 @@ on:
     branches:
       - main
       - feature-ecr-ecs
+    paths:
+      - ./app/**
+      - ./terraform/**
+      - ./github/workflows/deploy.yaml
     
 env:
   APPNAME: "ben-tech-challenge"
