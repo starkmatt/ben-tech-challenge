@@ -6,7 +6,7 @@ on:
     paths:
       - ./app/**
       - ./terraform/**
-      - ./github/workflows/deploy.yaml
+      - ./.github/workflows/deploy.yaml
     
 env:
   APPNAME: "ben-tech-challenge"
