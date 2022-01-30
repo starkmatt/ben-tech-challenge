@@ -135,3 +135,15 @@ make destroy
 ```
   
 ## Improvements
+This is by no means a production ready design; I would recommend that the following improvements be made to make it a more complete solution  
+- Logging and Metrics Configuration
+- Resource Tagging
+- Replace GitHub Secrets with a Centralized Parameter/Secrets Store
+- TLS on the ALB and Container
+- API Auth
+- API Error Handling
+- Deploy The Container Service on a Private Subnet with a Nat Gateway for Outbound Internet Access
+- Add unit testing of the application to the CI/CD Pipeline
+- Add Linting of the Terraform templates to the CI/CD Pipeline
+- For team environments; Set up a branching strategy including peer review/approval required for merges to main
+- Modularise Terraform Components for Re-Usability
