@@ -2,23 +2,22 @@
 ## Overview
 This repository contains the code and templates to build and deploy a simple REST API With NodeJS and Express.  
   
-The application has a single endpoint **/health** with a GET method that returns the following
+The application has a single endpoint **/health** with a GET method that returns the following:
 - appname 
 - version 
 - hash
   
-The application is Dockerised and deployed to AWS. The Terraform Templates deploy the infrastructure which includes the following resources  
+The application is Dockerised and deployed to AWS. The Terraform Templates deploy the infrastructure which includes the following resources: 
 | Network Components | Container Components | Front-end Components |
 | :---               | :---                 |:---                  |
 | VPC                | ECS Cluster          | Load Balancer        |
 | Internet Gateway   | Task Definition      | Target Group         |
-| Bublic Subnets     | Execution Role       | HTTP Listener        |
+| Public Subnets     | Execution Role       | HTTP Listener        |
 | Route Table, Routes and Route Associations | ECS Service       | |
 | Security Groups and Rules |                                    | |
   
 ## Usage
-### Deploy
-**Local**  
+### Deploy to Local Environment  
 There is a script to build and run the application inside Docker in your local environment. To get started clone the repo, navigate to the scripts folder, In init.sh set the correct CONTEXT (line 9) and run ./init.sh e.g.
 ```
 git clone https://github.com/nichichi/ben-tech-challenge.git  
@@ -35,27 +34,82 @@ docker stop ben-tech-challenge
 docker rm ben-tech-challenge
 ```  
   
-**CI/CD**  
-I have utilised GitHub actions to automate deployments to AWS when changes are made to the app | terraform | github workflow and pushed to my GitHub repo 
-To replicate this there are a couple of pre-requisites that are required  
+### Deploy with CI/CD Pipeline 
+I have utilised GitHub actions to automate deployments to AWS when changes are made to the **app | terraform | github workflow** and pushed to my GitHub repo  
+  
+To replicate this there are a couple of pre-requisites that are required; 
 - DockerHub Account
 - DockerHub Repo
 - AWS IAM User with Secret Key, Access Key, and IAM permissions for creating/destroying the Terraform resources
 - S3 Bucket to store Terraform State Files  
   
 To help with the IAM Permissions I have included an identity based policy **extras/deploy-execution-policy.json**  
-This policy contains the minimum permissions required to create and delete the Terraform resources. To use the policy make sure to replace all instances of **${REGION}** with the AWS region you are deloying to, and **${AWS_ACCOUNT_ID}** with your AWS Account ID before attaching the policy to an IAM group that your AWS IAM User is a member of  
+This policy contains the minimum permissions required to create and delete the Terraform resources. To use the policy make sure to replace all instances of **${REGION}** with the AWS region you are deloying to, and **${AWS_ACCOUNT_ID}** with your AWS Account ID before attaching the policy to an IAM group that your AWS IAM User is a member of.  
+  
+Also in the extras folder is a Cloudformation Template **cloudformation/prerequisites.yaml** to deploy the S3 Bucket for the Terraform backend. You can use this if you want but you will need to ensure that your user has permissions to deploy cloudformation stacks and the s3 resources it deploys.  
+  
+**Instructions**
+1. Fork the GitHub Repo  
+   ```
+   # Follow The Instructions at this link to Fork and Clone the ben-tech-challenge-repo to your GitHub User Account
+   https://docs.github.com/en/get-started/quickstart/fork-a-repo
+   ```
+2. Create GitHub Repo Secrets  
+   ```
+   # Follow the Instructions at this link to create the below secrets: https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository
+   # NOTE: GitHub Secrets CANNOT be retrieved in the GitHub Console, and CANNOT be output in plaintext in your workflow. Ensure you have a backup of your secrets.  
+     
+   AWS_ACCESS_KEY_ID=${your iam user access key id}
+   AWS_SECRET_ACCESS_KEY=${your iam user secret access key}
+   DOCKER_PASSWORD=${your docker hub password}
+   DOCKER_USER=${your docker hub username}
+   ```
+3. Set Variables in Files  
+   You can use the default values (as long as the network cidr ranges don't clash with your current environment) just make sure to update the **docker repo** and **s3 backend**, and check the AWS region and availability zones
+   ```
+   # in .github/workflows/deploy.yaml lines 12-14
+   APPNAME: "ben-tech-challenge"
+   DOCKER_REPO: "${your docker repo}"
+   PORT: 80
+   
+   # in terraform/local.tfvars
+   appname = "ben-tech-challenge"
+   environment = "local"
+   region = "ap-southeast-2"
+   profile = "default"
+   cidr = "10.0.0.0/24"
+   private1Cidr = "10.0.0.0/26"
+   private2Cidr = "10.0.0.64/26"
+   public1Cidr = "10.0.0.128/26"
+   public2Cidr = "10.0.0.192/26"
+   containerPort = 80 # make sure this matches your port in .github/workflows/deploy.yaml
+   albPort = 80
+   availabilityZoneA = "ap-southeast-2a"
+   availabilityZoneB = "ap-southeast-2b"
+   dockerRepo = "${your docker repo}"
+   cpu = 256
+   memory = 512
+   publicIp = true
+   
+   # in terraform/_backend.tf lines 3-5
+   bucket = "${your s3 bucket}"
+   key = "ben-tech-challenge/tfstatefiles"
+   region = "ap-southeast-2"
+   ```
+4. Trigger Deploy
   
   
-
-### Test
+**Test**  
 The easiest way to test is by using the curl command or you can use your favourite rest client.  
 An example using the curl command e.g.
 ```
 curl -i http://blah/health
 ```
-### Clean Up
+  
+**Clean Up**  
 ```
+# From the terraform directory
 make destroy
 ```
+  
 ## Improvements
