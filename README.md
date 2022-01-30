@@ -44,7 +44,9 @@ To replicate this there are a couple of pre-requisites that are required;
 - S3 Bucket to store Terraform State Files  
   
 To help with the IAM Permissions I have included an identity based policy **extras/deploy-execution-policy.json**  
-This policy contains the minimum permissions required to create and delete the Terraform resources. To use the policy make sure to replace all instances of **${REGION}** with the AWS region you are deloying to, and **${AWS_ACCOUNT_ID}** with your AWS Account ID before attaching the policy to an IAM group that your AWS IAM User is a member of.  
+This policy contains the minimum permissions required to create and delete the Terraform resources. To use the policy make sure to replace all instances of **${REGION}** with the AWS region you are deloying to, and **${AWS_ACCOUNT_ID}** with your AWS Account ID before attaching the policy to an IAM group that your AWS IAM User is a member of.
+
+**Note:** This policy does not contain the permissions required for viewing the resources in the AWS console
   
 Also in the extras folder is a Cloudformation Template **cloudformation/prerequisites.yaml** to deploy the S3 Bucket for the Terraform backend. You can use this if you want but you will need to ensure that your user has permissions to deploy cloudformation stacks and the s3 resources it deploys.  
   
@@ -96,15 +98,35 @@ Also in the extras folder is a Cloudformation Template **cloudformation/prerequi
    key = "ben-tech-challenge/tfstatefiles"
    region = "ap-southeast-2"
    ```
-4. Trigger Deploy
+4. Trigger Deploy  
+   The deploy workflow will be triggered when commits are pushed to the main branch. To add additional branches edit the branches list on line 3 of .github/workflows/deploy.yaml
+   ```
+   # Example git commands to trigger a deployment
+   git add .github/workflows/deploy.yaml terraform/local.tfvars terraform/_backend.tf
+   git commit -m "Changed variables to point to my docker repo and s3 bucket"
+   git push origin main
+   
+   # To view the deployment run output go to https://github.com/${your github user}/${your forked repo name}/actions/workflows/deploy.yaml select the run you want to view, and click on deploy (under jobs on the left hand side).
+   ```
   
   
 **Test**  
-The easiest way to test is by using the curl command or you can use your favourite rest client.  
-An example using the curl command e.g.
-```
-curl -i http://blah/health
-```
+1. Check the Target Group is Healthy  
+   In the AWS Console EC2 -> Target groups -> Select the target group and view Health status for the registered target e.g.
+   ![image](https://user-images.githubusercontent.com/7879884/151684214-d03ec96c-d2a5-4ba8-b3de-ac54275162b3.png)
+
+2. Retrieve the DNS Name of your Application Load Balancer  
+   In the AWS Console EC2 -> Load Balancers -> Select the load balancer and copy the DNS name e.g.
+   ![image](https://user-images.githubusercontent.com/7879884/151684310-2261c688-5587-4152-8b82-0e52e07a90c6.png)
+
+3. Call the Application  
+   The easiest way to test is by using the curl command or you can use your favourite rest client.  
+   An example using the curl command e.g.
+   ```
+   curl -i http://ben-tech-challenge-local-alb-1804404778.ap-southeast-2.elb.amazonaws.com/health
+   ```
+   ![image](https://user-images.githubusercontent.com/7879884/151684387-a3dec703-d8d8-4467-8878-8eae798abcba.png)
+
   
 **Clean Up**  
 ```
