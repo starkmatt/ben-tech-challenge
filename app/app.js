@@ -1,11 +1,11 @@
 const app = require('express')();
-const port = 8080;
+const port = process.env.PORT;
 
 app.get('/health', (req, res) => {
     res.status(200).send({
-        githash: '8hd8b877d3885a50f75883faab6798d0c13726bc9cg83g#hfj',
-        appname: 'ben-tech-challenge',
-        version: 'v1'
+        githash: process.env.SHA,
+        appname: process.env.APPNAME,
+        version: process.env.VERSION
     });
 });
 
