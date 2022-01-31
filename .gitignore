@@ -13,7 +13,7 @@
 ## Scripts & Util
 **/usefulcmds.sh
 **/ecr-push.sh
-#**/build.sh
+**/build.sh
 
 ## Node defaults
 # Logs
