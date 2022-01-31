@@ -13,7 +13,7 @@ env:
   DOCKER_REPO: "starkmatt/make01"
   PORT: 80
 
-name: Deploy to AWS
+name: Deploy too AWS
   
 jobs:
   deploy:
