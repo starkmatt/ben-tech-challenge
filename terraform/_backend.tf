@@ -1,6 +1,6 @@
 terraform {
     backend "s3"{
-        bucket = "snitch-tf-state-bucket"
+        bucket = "starkmatt-s3"
         key = "ben-tech-challenge/tfstatefiles"
         region = "ap-southeast-2"
     }
