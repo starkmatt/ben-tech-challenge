@@ -19,7 +19,7 @@ The application is Dockerised and deployed to AWS. The Terraform Templates deplo
 ## Usage
 ### Deploy to Local Environment  
 There is a script to build and run the application inside Docker in your local environment.  
-The instructions below assume you already have Docker installed on your local system. If you need to install Docker please follow the instructions on their site: https://docs.docker.com/engine/install/  
+*The instructions below assume you already have Docker installed on your local system. If you need to install Docker please follow the instructions on their site: https://docs.docker.com/engine/install/*  
   
 To get started clone the repo, navigate to the scripts folder, In init.sh set the correct CONTEXT (line 9) and run ./init.sh e.g.
 ```
