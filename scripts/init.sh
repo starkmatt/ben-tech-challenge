@@ -1,7 +1,7 @@
 ######
 #
 # Description:
-#   Init script to build and run the app in a container in your local environment
+#   Init script to build and run the app in a docker container in your local environment
 # Usage: 
 #   ./init.sh
 #

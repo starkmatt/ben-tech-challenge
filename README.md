@@ -1,4 +1,4 @@
-# ben-tech-challenge - DRAFT
+# ben-tech-challenge
 ## Overview
 This repository contains the code and templates to build and deploy a simple REST API With NodeJS and Express.  
   
@@ -18,7 +18,10 @@ The application is Dockerised and deployed to AWS. The Terraform Templates deplo
   
 ## Usage
 ### Deploy to Local Environment  
-There is a script to build and run the application inside Docker in your local environment. To get started clone the repo, navigate to the scripts folder, In init.sh set the correct CONTEXT (line 9) and run ./init.sh e.g.
+There is a script to build and run the application inside Docker in your local environment.  
+The instructions below assume you already have Docker installed on your local system. If you need to install Docker please follow the instructions on their site: https://docs.docker.com/engine/install/  
+  
+To get started clone the repo, navigate to the scripts folder, In init.sh set the correct CONTEXT (line 9) and run ./init.sh e.g.
 ```
 git clone https://github.com/nichichi/ben-tech-challenge.git  
 cd ben-tech-challenge/scripts/
